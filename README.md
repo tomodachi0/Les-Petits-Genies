@@ -1,2 +1,2 @@
-# Les-Petits-G-nies
+# Les-Petits-Genies
 projet de classe 
