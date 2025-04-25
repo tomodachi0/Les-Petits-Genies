@@ -1,0 +1,63 @@
+body {
+    margin: 0;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    background-color: #ffffff;
+    text-align: center;
+  }
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .side-img {
+    width: 200px;
+    height: auto;
+    margin: 0 20px;
+  }
+  
+  .left-img {
+    order: 1;
+  }
+  
+  .logo {
+    width: 600px;
+    order: 2;
+  }
+  
+  .right-img {
+    order: 3;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f0c7f7;
+    padding: 15px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  
+  .nav-item {
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #e4dcdc;
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.2s;
+  }
+  
+  .nav-item:hover {
+    transform: scale(1.1);
+  }
+  
+  .animaux { background-color: #f77f00; }
+  .drapeaux { background-color: #219ebc; }
+  .histoires { background-color: #9c27b0; }
+  .metiers { background-color: #2e8b57; }
+  .maths { background-color: #ff006e; }
+  
+  main {
+    margin-top: 50px;
+  }
+  

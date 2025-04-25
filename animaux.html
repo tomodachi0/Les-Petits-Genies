@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rubrique - Animaux | Les Petits Génies</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background-color: lch(100% 0.01 296.81);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    .logo {
+      width: 800px;
+      margin: 1px auto;
+      display: block;
+    }
+
+    h1 {
+      color: #ff6600;
+      font-size: 2.5em;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #ffffff, #647bd5);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    .card h3 {
+      margin: 10px 0 5px;
+      font-size: 1.3em;
+      color: #2b2b2b;
+    }
+
+    .card p {
+      font-size: 1em;
+      color: #4a4a4a;
+    }
+
+    .quiz-intro {
+      margin-top: 40px;
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #0077cc;
+    }
+
+    .quiz-zone {
+      margin: 30px auto;
+      max-width: 600px;
+      height: 300px;
+      background-color: #e0f7fa;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .quiz-zone p {
+      color: #666;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <img src="images/LesPetitsGénies(1).png" alt="Logo Les Petits Génies" class="logo">
+
+  <h1>Découvrons les animaux !</h1>
+
+  <section class="cards">
+    <div class="card">
+      <img src="images/lion.png" alt="Lion">
+      <h3>Lion</h3>
+      <p>Le roi de la savane, il rugit très fort !</p>
+    </div>
+    <div class="card">
+      <img src="images/elephant.png" alt="Éléphant">
+      <h3>Éléphant</h3>
+      <p>Un très grand animal avec une longue trompe.</p>
+    </div>
+    <div class="card">
+      <img src="images/girafe.png" alt="Girafe">
+      <h3>Girafe</h3>
+      <p>Elle a un long cou pour attraper les feuilles en haut.</p>
+    </div>
+    <div class="card">
+      <img src="images/koala.png" alt="Koala">
+      <h3>Koala</h3>
+      <p>Petit animal mignon qui aime dormir dans les arbres.</p>
+    </div>
+    <div class="card">
+      <img src="images/kangourou.png" alt="Kangourou">
+      <h3>Kangourou</h3>
+      <p>Il saute très haut et porte son bébé dans sa poche.</p>
+    </div>
+    <div class="card">
+      <img src="images/chien.png" alt="Chien">
+      <h3>Chien</h3>
+      <p>Le meilleur ami de l’homme, il adore jouer !</p>
+    </div>
+    <div class="card">
+      <img src="images/chat.png" alt="Chat">
+      <h3>Chat</h3>
+      <p>Un félin doux qui ronronne quand il est content.</p>
+    </div>
+    <div class="card">
+      <img src="images/singe.png" alt="Singe">
+      <h3>Singe</h3>
+      <p>Très malin, il grimpe et mange des bananes !</p>
+    </div>
+    <div class="card">
+        <img src="images/poule.png" alt="Poule">
+        <h3>poule</h3>
+        <p>Un oiseau qui picore des graines, pond des œufs et fait "Cot cot codet !"</p>
+      </div>
+      <div class="card">
+        <img src="images/gazelle.png" alt="Gazelle">
+        <h3>Gazelle</h3>
+        <p>Une belle antilope fine et rapide qui court vite dans la savane</p>
+      </div>
+      <div class="card">
+        <img src="images/lapin.png" alt="Lapin">
+        <h3>Lapin</h3>
+        <p>Un petit animal mignon avec de longues oreilles qui aime sauter et grignoter des carottes !</p>
+      </div>
+      <div class="card">
+          <img src="images/vache.png" alt="Vache">
+          <h3>Vache</h3>
+          <p>Une grosse et gentille mamifère qui donne du lait et fait "Meuh !" !</p>
+        </div>
+  </section>
+
+  <div class="quiz-intro">
+    Un petit quiz t’attend maintenant ! 🧠🎉
+  </div>
+
+  <div class="quiz-zone">
+    <p>Le quiz va s’afficher ici avec l’image et les 3 choix.<br>
+    (partie php)</p>
+  </div>
+
+</body>
+</html>
