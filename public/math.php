@@ -120,19 +120,19 @@ require_once '../includes/header.php';
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Track score
+        
         let score = 0;
         let correct = 0;
         let incorrect = 0;
         
-        // Store current problems
+        
         const problems = {
             addition: { num1: 0, num2: 0 },
             subtraction: { num1: 0, num2: 0 },
             multiplication: { num1: 0, num2: 0 }
         };
         
-        // Store difficulty ranges
+        
         const difficulties = {
             addition: {
                 easy: { min: 1, max: 10 },
@@ -151,19 +151,19 @@ require_once '../includes/header.php';
             }
         };
         
-        // Current difficulty
+        
         const currentDifficulty = {
             addition: 'easy',
             subtraction: 'easy',
             multiplication: 'easy'
         };
         
-        // Generate a random number within range
+        
         function getRandomNumber(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
         
-        // Generate new problems
+        
         function generateProblem(type) {
             const difficulty = currentDifficulty[type];
             const range = difficulties[type][difficulty];
@@ -205,14 +205,14 @@ require_once '../includes/header.php';
             }
         }
         
-        // Update score display
+       
         function updateScore() {
             document.getElementById('score').textContent = score;
             document.getElementById('correct').textContent = correct;
             document.getElementById('incorrect').textContent = incorrect;
         }
         
-        // Check answers
+        
         function checkAnswer(type) {
             let userAnswer, correctAnswer, resultElement;
             
@@ -241,7 +241,7 @@ require_once '../includes/header.php';
                 resultElement.className = 'result-message success';
                 score += 10;
                 correct++;
-                // Generate a new problem after correct answer
+               
                 setTimeout(() => {
                     generateProblem(type);
                 }, 1000);
@@ -255,43 +255,43 @@ require_once '../includes/header.php';
             updateScore();
         }
         
-        // Tab switching
+   
         document.querySelectorAll('.tab-btn').forEach(button => {
             button.addEventListener('click', function() {
-                // Remove active class from all tabs and contents
+                
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                 
-                // Add active class to clicked tab and corresponding content
+               
                 this.classList.add('active');
                 document.getElementById(this.dataset.tab).classList.add('active');
             });
         });
         
-        // Difficulty selector
+        
         document.querySelectorAll('.difficulty-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const type = this.dataset.type;
                 const difficulty = this.dataset.difficulty;
                 
-                // Update active difficulty button
+                
                 document.querySelectorAll(`.difficulty-btn[data-type="${type}"]`).forEach(btn => {
                     btn.classList.remove('active');
                 });
                 this.classList.add('active');
                 
-                // Update current difficulty and generate new problem
+               
                 currentDifficulty[type] = difficulty;
                 generateProblem(type);
             });
         });
         
-        // Check answer buttons
+   
         document.getElementById('add-check').addEventListener('click', () => checkAnswer('addition'));
         document.getElementById('sub-check').addEventListener('click', () => checkAnswer('subtraction'));
         document.getElementById('mul-check').addEventListener('click', () => checkAnswer('multiplication'));
         
-        // Enter key for answer inputs
+       
         document.getElementById('add-answer').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') checkAnswer('addition');
         });
@@ -302,7 +302,7 @@ require_once '../includes/header.php';
             if (e.key === 'Enter') checkAnswer('multiplication');
         });
         
-        // Initialize with problems
+        
         generateProblem('addition');
         generateProblem('subtraction');
         generateProblem('multiplication');
