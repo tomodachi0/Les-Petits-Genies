@@ -1,5 +1,5 @@
 <?php
-// Start session on every page
+
 session_start();
 ?>
 <!DOCTYPE html>
@@ -10,12 +10,10 @@ session_start();
     <title>Les Petits Génies</title>
     <link rel="stylesheet" href="/educational-website/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <!-- Ton logo en image -->
         <div class="logo-container">
             <img src="/educational-website/images/LesPetitsGénies(1).png" alt="Les Petits Génies" class="logo">
         </div>

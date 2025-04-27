@@ -1,9 +1,4 @@
-/* 
- * Kids Learning Zone - Main CSS Styles
- * A colorful, child-friendly educational website style
- */
 
-/* Root variables for consistent color scheme */
 :root {
     --primary-color: #29a51e;
     --primary-dark: #fe632f;
@@ -22,7 +17,7 @@
     --transition: all 0.3s ease;
 }
 
-/* Base styles */
+
 * {
     margin: 0;
     padding: 0;
@@ -37,14 +32,14 @@ body {
     overflow-x: hidden;
 }
 
-/* Container */
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-/* Typography */
+
 h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1rem;
     color: var(--dark-color);
@@ -81,7 +76,7 @@ a:hover {
     color: var(--primary-dark);
 }
 
-/* Buttons */
+
 .btn {
     display: inline-block;
     padding: 0.75rem 1.5rem;
@@ -140,7 +135,7 @@ a:hover {
     font-size: 0.9rem;
 }
 
-/* Header */
+
 
 header {
     background-color: white;
@@ -157,9 +152,9 @@ header {
 
 
 .logo-container img {
-    max-width: 500px; /* PAS plus */
+    max-width: 500px; 
     height: auto;
-    transition: all 0.3s ease; /* Animation douce */
+    transition: all 0.3s ease; 
 }
 
 
@@ -187,8 +182,8 @@ nav {
     list-style: none;
     margin: 0 auto;
     padding: 0;
-    max-width: 1200px; /* Contrôle la largeur */
-    gap: 50px; /* Espace fixe entre chaque lien */
+    max-width: 1200px; 
+    gap: 50px; 
 }
 
 
@@ -206,42 +201,42 @@ nav {
     transition: var(--transition);
 }
 .main-nav li:nth-child(1) a {
-    background-color: #ff7f0e; /* Orange pour Accueil */
+    background-color: #ff7f0e; 
     color: white;
     padding: 10px 20px;
     border-radius: 25px;
 }
 
 .main-nav li:nth-child(2) a {
-    background-color: #ff1493; /* Rose pour Mathématiques */
+    background-color: #ff1493; 
     color: white;
     padding: 10px 20px;
     border-radius: 25px;
 }
 
 .main-nav li:nth-child(3) a {
-    background-color: #1f77b4; /* Bleu pour Drapeaux */
+    background-color: #1f77b4; 
     color: white;
     padding: 10px 20px;
     border-radius: 25px;
 }
 
 .main-nav li:nth-child(4) a {
-    background-color: #2ca02c; /* Vert pour Animaux */
+    background-color: #2ca02c; 
     color: white;
     padding: 10px 20px;
     border-radius: 25px;
 }
 
 .main-nav li:nth-child(5) a {
-    background-color: #9467bd; /* Violet pour Métiers */
+    background-color: #9467bd; 
     color: white;
     padding: 10px 20px;
     border-radius: 25px;
 }
 
 .main-nav li:nth-child(6) a {
-    background-color: #d62728; /* Rouge pour Histoires */
+    background-color: #d62728; 
     color: white;
     padding: 10px 20px;
     border-radius: 25px;
@@ -302,7 +297,7 @@ nav {
     }
 }
 
-/* Admin Login */
+
 .admin-login {
     margin-top: 1rem;
     font-size: 0.9rem;
@@ -323,7 +318,7 @@ nav {
     margin-right: 0.5rem;
 }
 
-/* Footer */
+
 footer {
     background-color: var(--dark-color);
     color: white;
@@ -351,31 +346,31 @@ footer {
     transform: scale(1.2);
 }
 
-/* Hero section */
+
 .hero {
-    background: linear-gradient(135deg, #fe66b7, #eef520); /* Dégradé violet-bleu */
+    background: linear-gradient(135deg, #fe66b7, #eef520); 
     color: white;
     padding: 4rem 2rem;
     text-align: center;
     margin-bottom: 3rem;
     border-radius: 0 0 var(--border-radius) var(--border-radius);
-    font-family: 'Fredoka', sans-serif; /* Utilise la nouvelle police */
+    font-family: 'Fredoka', sans-serif; 
 }
 
 .hero-content h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Ombre légère */
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
 
 .hero-content p {
     font-size: 1.5rem;
     margin-bottom: 2rem;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Petite ombre aussi */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2); 
 }
 
 
-/* Category cards */
+
 .category-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -413,7 +408,7 @@ footer {
     color: var(--primary-color);
 }
 
-/* Features section */
+
 .features-section {
     padding: 4rem 2rem;
     text-align: center;
@@ -458,8 +453,8 @@ footer {
     color: white;
 }
 .animal-display img {
-    max-width: 300px; /* Largeur maximale */
-    max-height: 300px; /* Hauteur maximale */
+    max-width: 300px; 
+    max-height: 300px; 
     width: auto;
     height: auto;
     object-fit: contain;
@@ -487,7 +482,7 @@ footer {
 }
 
 
-/* Page header */
+
 .page-header {
     text-align: center;
     padding: 2rem;
@@ -495,7 +490,7 @@ footer {
     border-bottom: 1px solid var(--gray);
 }
 
-/* Quiz item display */
+
 .flag-display,
 .animal-display,
 .job-display {
@@ -504,7 +499,7 @@ footer {
     margin-bottom: 2rem;
 }
 
-/* Score display */
+
 .score-display {
     display: flex;
     justify-content: center;
@@ -531,7 +526,7 @@ footer {
     align-items: center;
 }
 
-/* Math page styles */
+
 .math-container {
     max-width: 800px;
     margin: 0 auto;
@@ -669,7 +664,6 @@ footer {
     margin-bottom: 1rem;
 }
 
-/* Quiz game common styles */
 .flag-game,
 .animal-game,
 .job-game {
@@ -690,7 +684,7 @@ footer {
     text-align: center;
 }
 
-/* Quiz question */
+
 .flag-question,
 .animal-question,
 .job-question {
@@ -745,7 +739,7 @@ footer {
     text-align: center;
 }
 
-/* Stories Grid Layout */
+
 .stories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -785,7 +779,7 @@ footer {
 
 .video-container {
     position: relative;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    padding-bottom: 56.25%;
     height: 0;
     overflow: hidden;
     margin-bottom: 1rem;
@@ -800,7 +794,7 @@ footer {
     border-radius: var(--border-radius);
 }
 
-/* Pagination */
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -837,7 +831,7 @@ footer {
     margin-bottom: 1rem;
 }
 
-/* Admin login styles */
+
 .admin-login {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     min-height: 100vh;
@@ -921,7 +915,7 @@ footer {
     margin-top: 1.5rem;
 }
 
-/* Admin dashboard styles */
+
 .admin-page {
     background-color: var(--gray-light);
     min-height: 100vh;
@@ -1072,7 +1066,7 @@ footer {
     text-align: center;
 }
 
-/* Admin panel styles */
+
 .admin-panel {
     background-color: white;
     border-radius: var(--border-radius);
@@ -1162,7 +1156,7 @@ footer {
     color: #888;
 }
 
-/* Animation classes */
+
 .animate {
     opacity: 0;
     transform: translateY(20px);
@@ -1174,7 +1168,7 @@ footer {
     transform: translateY(0);
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 992px) {
     .admin-container {
         flex-direction: column;

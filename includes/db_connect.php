@@ -1,13 +1,9 @@
 <?php
-/**
- * Database connection handler
- */
 
-// Database configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'children_edu');
-define('DB_USER', 'root');   // Change in production
-define('DB_PASS', '');       // Change in production
+define('DB_USER', 'root');   
+define('DB_PASS', '');       
 define('DB_CHARSET', 'utf8mb4');
 
 /**
@@ -29,7 +25,7 @@ function getDbConnection() {
             
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         } catch (PDOException $e) {
-            // Log error but don't expose details to user
+           
             error_log("Connection failed: " . $e->getMessage());
             die("Sorry, there was a problem connecting to the database.");
         }
