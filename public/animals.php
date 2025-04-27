@@ -19,8 +19,8 @@ if (!empty($animals)) {
 ?>
 
 <div class="page-header">
-    <h1><i class="fas fa-paw"></i> Animals Quiz</h1>
-    <p>Learn about different animals and their sounds!</p>
+    <h1><i class="fas fa-paw"></i>Le Quiz des animaux</h1>
+    <p>Découvre différents animaux et leurs sons !</p>
 </div>
 
 <div class="score-display">
@@ -52,33 +52,35 @@ if (!empty($animals)) {
             </div>
             
             <div class="animal-question">
-                <h3>Which animal makes this sound?</h3>
+                <h3>C'est quel animal?</h3>
                 <div class="options-container" id="options-container">
                     <!-- Options will be inserted here by JavaScript -->
                 </div>
                 <div class="result-message" id="animal-result"></div>
             </div>
             
-            <button id="next-animal" class="btn btn-primary">Next Animal</button>
+            <button id="next-animal" class="btn btn-primary">animal suivant</button>
         </div>
         
         <div class="animals-info">
-            <h2>Did you know?</h2>
-            <div class="info-cards">
-                <div class="info-card animate">
-                    <h3>Animal Sounds</h3>
-                    <p>Different animals make unique sounds to communicate. These sounds help them express emotions, warn others of danger, or find mates!</p>
-                </div>
-                
-                <div class="info-card animate">
-                    <h3>Animal Habitats</h3>
-                    <p>Animals live in different places called habitats. Some live in forests, others in oceans, and some even in deserts!</p>
-                </div>
-                
-                <div class="info-card animate">
-                    <h3>Animal Facts</h3>
-                    <p>Every animal is special and has amazing abilities. Some can fly, others can swim deep in the ocean, and some can even change their colors!</p>
-                </div>
+        <h2>Le savais-tu ?</h2>
+<div class="info-cards">
+    <div class="info-card animate">
+        <h3>Sons des animaux</h3>
+        <p>Les différents animaux produisent des sons uniques pour communiquer. Ces sons les aident à exprimer leurs émotions, à avertir des dangers ou à trouver des partenaires !</p>
+    </div>
+    
+    <div class="info-card animate">
+        <h3>Habitats des animaux</h3>
+        <p>Les animaux vivent dans différents endroits appelés habitats. Certains vivent dans les forêts, d'autres dans les océans, et certains même dans les déserts !</p>
+    </div>
+    
+    <div class="info-card animate">
+        <h3>Anecdotes sur les animaux</h3>
+        <p>Chaque animal est spécial et possède des capacités extraordinaires. Certains peuvent voler, d'autres plonger profondément dans l'océan, et certains peuvent même changer de couleur !</p>
+    </div>
+</div>
+
             </div>
         </div>
         

@@ -22,8 +22,8 @@ $currentStories = array_slice($stories, $offset, $storiesPerPage);
 ?>
 
 <div class="page-header">
-    <h1><i class="fas fa-book-reader"></i> Fun Story Videos</h1>
-    <p>Watch and learn with our collection of educational stories!</p>
+    <h1><i class="fas fa-book-reader"></i>Des histoires pour les enfants</h1>
+    <p>Regarde et apprends avec notre collection d'histoires éducatives !</p>
 </div>
 
 <div class="stories-container">

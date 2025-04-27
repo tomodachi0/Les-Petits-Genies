@@ -19,8 +19,8 @@ if (!empty($flags)) {
 ?>
 
 <div class="page-header">
-    <h1><i class="fas fa-flag"></i> World Flags</h1>
-    <p>Learn about different countries and their flags!</p>
+    <h1><i class="fas fa-flag"></i>Les drapeaux </h1>
+    <p>Apprend les drapeaux des pays !</p>
 </div>
 
 <div class="score-display">
@@ -52,35 +52,36 @@ if (!empty($flags)) {
             </div>
             
             <div class="flag-question">
-                <h3>Which country does this flag belong to?</h3>
+                <h3>C'est le drapeau de quel pays?</h3>
                 <div class="options-container" id="options-container">
                     <!-- Options will be inserted here by JavaScript -->
                 </div>
                 <div class="result-message" id="flag-result"></div>
             </div>
             
-            <button id="next-flag" class="btn btn-primary">Next Flag</button>
+            <button id="next-flag" class="btn btn-primary">drapeau suivant</button>
         </div>
         
         <div class="flags-info">
-            <h2>Did you know?</h2>
-            <div class="info-cards">
-                <div class="info-card animate">
-                    <h3>Flag Colors</h3>
-                    <p>The colors in flags often have special meanings. Red can symbolize courage or blood shed for independence, white often represents peace, and blue might stand for freedom or the sky.</p>
-                </div>
-                
-                <div class="info-card animate">
-                    <h3>Flag Shapes</h3>
-                    <p>Most country flags are rectangular, but Nepal has the only non-rectangular national flag - it's shaped like two triangles!</p>
-                </div>
-                
-                <div class="info-card animate">
-                    <h3>Flag Symbols</h3>
-                    <p>Symbols on flags have special meanings. Stars might represent states or provinces, animals can represent strength, and plants might show what grows in that country.</p>
-                </div>
-            </div>
+    <h2>Le savais-tu ?</h2>
+    <div class="info-cards">
+        <div class="info-card animate">
+            <h3>Couleurs des drapeaux</h3>
+            <p>Les couleurs des drapeaux ont souvent des significations particulières. Le rouge peut symboliser le courage ou le sang versé pour l'indépendance, le blanc représente souvent la paix, et le bleu peut représenter la liberté ou le ciel.</p>
         </div>
+        
+        <div class="info-card animate">
+            <h3>Formes des drapeaux</h3>
+            <p>La plupart des drapeaux nationaux sont rectangulaires, mais le Népal possède le seul drapeau national non rectangulaire — il est en forme de deux triangles !</p>
+        </div>
+        
+        <div class="info-card animate">
+            <h3>Symboles sur les drapeaux</h3>
+            <p>Les symboles sur les drapeaux ont des significations spéciales. Les étoiles peuvent représenter des États ou des provinces, les animaux peuvent symboliser la force, et les plantes peuvent illustrer ce qui pousse dans le pays.</p>
+        </div>
+    </div>
+</div>
+
         
         <script>
             document.addEventListener('DOMContentLoaded', function() {

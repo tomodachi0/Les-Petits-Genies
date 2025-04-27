@@ -19,8 +19,8 @@ if (!empty($jobs)) {
 ?>
 
 <div class="page-header">
-    <h1><i class="fas fa-briefcase"></i> Jobs Quiz</h1>
-    <p>Learn about different jobs and professions!</p>
+    <h1><i class="fas fa-briefcase"></i>Le quiz des métiers</h1>
+    <p>apprend les différents métiers</p>
 </div>
 
 <div class="score-display">
@@ -52,7 +52,7 @@ if (!empty($jobs)) {
             </div>
             
             <div class="job-question">
-                <h3>What is this job called?</h3>
+                <h3>comment appelle-t-on ce métier?</h3>
                 <div class="options-container" id="options-container">
                     <!-- Options will be inserted here by JavaScript -->
                 </div>
@@ -63,24 +63,25 @@ if (!empty($jobs)) {
         </div>
         
         <div class="jobs-info">
-            <h2>Did you know?</h2>
-            <div class="info-cards">
-                <div class="info-card animate">
-                    <h3>Different Jobs</h3>
-                    <p>There are many different jobs in the world. Each job helps make our community better in its own special way!</p>
-                </div>
-                
-                <div class="info-card animate">
-                    <h3>Job Tools</h3>
-                    <p>Different jobs use different tools. A doctor uses a stethoscope, a chef uses cooking utensils, and a teacher uses books and markers!</p>
-                </div>
-                
-                <div class="info-card animate">
-                    <h3>Work Places</h3>
-                    <p>Jobs can be done in many places. Some people work in offices, others work outdoors, and some even work in space!</p>
-                </div>
-            </div>
+    <h2>Le savais-tu ?</h2>
+    <div class="info-cards">
+        <div class="info-card animate">
+            <h3>Différents métiers</h3>
+            <p>Il existe de nombreux métiers dans le monde. Chaque métier aide à améliorer notre communauté d'une manière unique !</p>
         </div>
+        
+        <div class="info-card animate">
+            <h3>Outils de travail</h3>
+            <p>Chaque métier utilise des outils différents. Un médecin utilise un stéthoscope, un chef utilise des ustensiles de cuisine, et un enseignant utilise des livres et des marqueurs !</p>
+        </div>
+        
+        <div class="info-card animate">
+            <h3>Lieux de travail</h3>
+            <p>On peut exercer un métier dans de nombreux endroits. Certaines personnes travaillent dans des bureaux, d'autres en plein air, et certaines même dans l'espace !</p>
+        </div>
+    </div>
+</div>
+
         
         <script>
             document.addEventListener('DOMContentLoaded', function() {

@@ -5,8 +5,8 @@
 
 /* Root variables for consistent color scheme */
 :root {
-    --primary-color: #4a6bff;
-    --primary-dark: #3a57d0;
+    --primary-color: #29a51e;
+    --primary-dark: #fe632f;
     --secondary-color: #ff6b6b;
     --accent-color: #ffbe0b;
     --success-color: #66bb6a;
@@ -141,19 +141,28 @@ a:hover {
 }
 
 /* Header */
+
 header {
     background-color: white;
     box-shadow: var(--shadow);
-    padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    padding: 20px 0;
+    text-align: center;
 }
 
 .logo {
     display: flex;
+    justify-content: center;
     align-items: center;
 }
+
+
+.logo-container img {
+    max-width: 500px; /* PAS plus */
+    height: auto;
+    transition: all 0.3s ease; /* Animation douce */
+}
+
+
 
 .logo h1 {
     font-size: 1.8rem;
@@ -173,8 +182,15 @@ nav {
 
 .main-nav {
     display: flex;
+    justify-content: center;
+    align-items: center;
     list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 1200px; /* Contrôle la largeur */
+    gap: 50px; /* Espace fixe entre chaque lien */
 }
+
 
 .main-nav li {
     margin-right: 1.5rem;
@@ -189,6 +205,50 @@ nav {
     border-radius: var(--border-radius);
     transition: var(--transition);
 }
+.main-nav li:nth-child(1) a {
+    background-color: #ff7f0e; /* Orange pour Accueil */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+}
+
+.main-nav li:nth-child(2) a {
+    background-color: #ff1493; /* Rose pour Mathématiques */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+}
+
+.main-nav li:nth-child(3) a {
+    background-color: #1f77b4; /* Bleu pour Drapeaux */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+}
+
+.main-nav li:nth-child(4) a {
+    background-color: #2ca02c; /* Vert pour Animaux */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+}
+
+.main-nav li:nth-child(5) a {
+    background-color: #9467bd; /* Violet pour Métiers */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+}
+
+.main-nav li:nth-child(6) a {
+    background-color: #d62728; /* Rouge pour Histoires */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+}
+
+
+
 
 .main-nav a:hover {
     background-color: var(--gray-light);
@@ -293,24 +353,27 @@ footer {
 
 /* Hero section */
 .hero {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, #fe66b7, #eef520); /* Dégradé violet-bleu */
     color: white;
     padding: 4rem 2rem;
     text-align: center;
     margin-bottom: 3rem;
     border-radius: 0 0 var(--border-radius) var(--border-radius);
+    font-family: 'Fredoka', sans-serif; /* Utilise la nouvelle police */
 }
 
 .hero-content h1 {
     font-size: 3rem;
-    color: white;
     margin-bottom: 1rem;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Ombre légère */
 }
 
 .hero-content p {
     font-size: 1.5rem;
     margin-bottom: 2rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Petite ombre aussi */
 }
+
 
 /* Category cards */
 .category-cards {
@@ -394,6 +457,35 @@ footer {
     font-size: 1.8rem;
     color: white;
 }
+.animal-display img {
+    max-width: 300px; /* Largeur maximale */
+    max-height: 300px; /* Hauteur maximale */
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+.flag-display img {
+    max-width: 300px;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.job-display img {
+    max-width: 300px;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
 
 /* Page header */
 .page-header {
