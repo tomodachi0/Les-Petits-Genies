@@ -2,7 +2,7 @@
 require_once '../includes/header.php';
 require_once '../includes/db_connect.php';
 
-// Get all stories from database
+
 try {
     $pdo = getDbConnection();
     $stmt = $pdo->query("SELECT * FROM stories ORDER BY title");
@@ -12,7 +12,7 @@ try {
     $stories = [];
 }
 
-// Pagination settings
+
 $storiesPerPage = 6;
 $totalStories = count($stories);
 $totalPages = ceil($totalStories / $storiesPerPage);
@@ -33,19 +33,19 @@ $currentStories = array_slice($stories, $offset, $storiesPerPage);
         <div class="stories-grid">
             <?php
             function getYouTubeEmbedUrl($url) {
-                // If already in embed format, return as is
+                
                 if (preg_match('~^https?://(www\.)?youtube\.com/embed/([a-zA-Z0-9_-]+)~', $url, $matches)) {
                     return $url;
                 }
-                // Convert youtu.be/VIDEO_ID
+                
                 if (preg_match('~youtu\.be/([a-zA-Z0-9_-]+)~', $url, $matches)) {
                     return 'https://www.youtube.com/embed/' . $matches[1];
                 }
-                // Convert watch?v=VIDEO_ID
+               
                 if (preg_match('~watch\?v=([a-zA-Z0-9_-]+)~', $url, $matches)) {
                     return 'https://www.youtube.com/embed/' . $matches[1];
                 }
-                // Not a valid YouTube URL
+                
                 return false;
             }
             ?>
