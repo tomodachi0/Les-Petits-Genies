@@ -2,7 +2,7 @@
 require_once '../includes/header.php';
 require_once '../includes/db_connect.php';
 
-// Get all animals from database
+
 try {
     $pdo = getDbConnection();
     $stmt = $pdo->query("SELECT * FROM animals");
@@ -12,7 +12,7 @@ try {
     $animals = [];
 }
 
-// Shuffle animals to randomize
+
 if (!empty($animals)) {
     shuffle($animals);
 }
@@ -54,7 +54,7 @@ if (!empty($animals)) {
             <div class="animal-question">
                 <h3>C'est quel animal?</h3>
                 <div class="options-container" id="options-container">
-                    <!-- Options will be inserted here by JavaScript -->
+                
                 </div>
                 <div class="result-message" id="animal-result"></div>
             </div>
@@ -86,14 +86,14 @@ if (!empty($animals)) {
         
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Animal data from PHP
+              
                 const animals = <?php echo json_encode($animals); ?>;
                 let currentAnimalIndex = 0;
                 let score = 0;
                 let correct = 0;
                 let incorrect = 0;
                 
-                // DOM elements
+               
                 const animalImage = document.getElementById('current-animal');
                 const animalAudio = document.getElementById('animal-audio');
                 const playButton = document.getElementById('play-audio');
@@ -104,37 +104,36 @@ if (!empty($animals)) {
                 const correctDisplay = document.getElementById('correct');
                 const incorrectDisplay = document.getElementById('incorrect');
                 
-                // Preload images for better performance
+             
                 animals.forEach(animal => {
                     const img = new Image();
                     img.src = '../' + animal.image_path;
                 });
                 
-                // Update score display
                 function updateScore() {
                     scoreDisplay.textContent = score;
                     correctDisplay.textContent = correct;
                     incorrectDisplay.textContent = incorrect;
                 }
                 
-                // Get random options
+            
                 function getRandomOptions(correctAnswer) {
-                    // Copy animals array and remove correct answer
+                    
                     const otherAnimals = animals.filter(animal => animal.animal_name !== correctAnswer);
                     
-                    // Shuffle other animals
+                 
                     for (let i = otherAnimals.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [otherAnimals[i], otherAnimals[j]] = [otherAnimals[j], otherAnimals[i]];
                     }
                     
-                    // Take 3 random animals
+                    
                     const randomOptions = otherAnimals.slice(0, 3);
                     
-                    // Add correct answer
+                  
                     randomOptions.push({ animal_name: correctAnswer });
                     
-                    // Shuffle options
+                    
                     for (let i = randomOptions.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [randomOptions[i], randomOptions[j]] = [randomOptions[j], randomOptions[i]];
@@ -143,18 +142,18 @@ if (!empty($animals)) {
                     return randomOptions;
                 }
                 
-                // Display an animal and options
+               
                 function displayAnimal(index) {
                     const animal = animals[index];
                     
-                    // Update animal image
+                   
                     animalImage.src = '../' + animal.image_path;
                     animalImage.alt = animal.animal_name;
                     
-                    // Update audio
+               
                     animalAudio.src = '../' + animal.audio_path;
                     
-                    // Generate options
+                  
                     const options = getRandomOptions(animal.animal_name);
                     optionsContainer.innerHTML = '';
                     
@@ -171,15 +170,15 @@ if (!empty($animals)) {
                         optionsContainer.appendChild(button);
                     });
                     
-                    // Reset result message
+               
                     resultMessage.textContent = '';
                     resultMessage.className = 'result-message';
                     
-                    // Enable options
+                    
                     enableOptions(true);
                 }
                 
-                // Check the selected answer
+                
                 function checkAnswer(selectedAnimal) {
                     const correctAnimal = animals[currentAnimalIndex].animal_name;
                     
@@ -197,7 +196,6 @@ if (!empty($animals)) {
                     
                     updateScore();
                     
-                    // Highlight correct answer and disable options
                     const options = optionsContainer.querySelectorAll('.option-btn');
                     options.forEach(option => {
                         if (option.dataset.animal === correctAnimal) {
@@ -210,7 +208,7 @@ if (!empty($animals)) {
                     enableOptions(false);
                 }
                 
-                // Enable/disable option buttons
+               
                 function enableOptions(enable) {
                     const options = optionsContainer.querySelectorAll('.option-btn');
                     options.forEach(option => {
@@ -218,7 +216,7 @@ if (!empty($animals)) {
                     });
                 }
                 
-                // Event listeners
+                
                 playButton.addEventListener('click', function() {
                     animalAudio.play();
                 });
@@ -228,7 +226,7 @@ if (!empty($animals)) {
                     displayAnimal(currentAnimalIndex);
                 });
                 
-                // Start the game
+              
                 displayAnimal(currentAnimalIndex);
             });
         </script>
