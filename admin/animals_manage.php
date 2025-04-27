@@ -8,7 +8,7 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 }
 
-// Initialize variables
+
 $error = '';
 $success = '';
 $animal = [
@@ -18,7 +18,6 @@ $animal = [
     'audio_path' => ''
 ];
 
-// Generate CSRF token if not exists
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -56,7 +55,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     }
 }
 
-// Handle edit action - load animal data
+// Handle edit action 
 if (isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['id'])) {
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
@@ -78,11 +77,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['id'])) {
 
 // Handle form submission (add/edit)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validate CSRF token
+
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error = "Invalid form submission";
     } else {
-        // Get form data
+  
         $id = isset($_POST['id']) ? filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) : null;
         $animal_name = trim(filter_input(INPUT_POST, 'animal_name', FILTER_SANITIZE_STRING));
         
@@ -162,12 +161,12 @@ try {
     $perPage = 10;
     $offset = ($page - 1) * $perPage;
     
-    // Count total records
+
     $stmt = $pdo->query("SELECT COUNT(*) FROM animals");
     $totalAnimals = $stmt->fetchColumn();
     $totalPages = ceil($totalAnimals / $perPage);
     
-    // Get paginated records
+ 
     $stmt = $pdo->prepare("SELECT * FROM animals ORDER BY animal_name LIMIT :offset, :perPage");
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
