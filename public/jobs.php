@@ -2,7 +2,7 @@
 require_once '../includes/header.php';
 require_once '../includes/db_connect.php';
 
-// Get all jobs from database
+
 try {
     $pdo = getDbConnection();
     $stmt = $pdo->query("SELECT * FROM jobs");
@@ -12,7 +12,7 @@ try {
     $jobs = [];
 }
 
-// Shuffle jobs to randomize
+
 if (!empty($jobs)) {
     shuffle($jobs);
 }
@@ -103,37 +103,37 @@ if (!empty($jobs)) {
                 const correctDisplay = document.getElementById('correct');
                 const incorrectDisplay = document.getElementById('incorrect');
                 
-                // Preload images for better performance
+               
                 jobs.forEach(job => {
                     const img = new Image();
                     img.src = '../' + job.image_path;
                 });
                 
-                // Update score display
+                
                 function updateScore() {
                     scoreDisplay.textContent = score;
                     correctDisplay.textContent = correct;
                     incorrectDisplay.textContent = incorrect;
                 }
                 
-                // Get random options
+                
                 function getRandomOptions(correctAnswer) {
-                    // Copy jobs array and remove correct answer
+                    
                     const otherJobs = jobs.filter(job => job.job_name !== correctAnswer);
                     
-                    // Shuffle other jobs
+                    
                     for (let i = otherJobs.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [otherJobs[i], otherJobs[j]] = [otherJobs[j], otherJobs[i]];
                     }
                     
-                    // Take 3 random jobs
+                    
                     const randomOptions = otherJobs.slice(0, 3);
                     
-                    // Add correct answer
+                    
                     randomOptions.push({ job_name: correctAnswer });
                     
-                    // Shuffle options
+                    
                     for (let i = randomOptions.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [randomOptions[i], randomOptions[j]] = [randomOptions[j], randomOptions[i]];
@@ -142,18 +142,18 @@ if (!empty($jobs)) {
                     return randomOptions;
                 }
                 
-                // Display a job and options
+                
                 function displayJob(index) {
                     const job = jobs[index];
                     
-                    // Update job image
+                    
                     jobImage.src = '../' + job.image_path;
                     jobImage.alt = job.job_name;
                     
-                    // Update audio
+                    
                     jobAudio.src = '../' + job.audio_path;
                     
-                    // Generate options
+                    
                     const options = getRandomOptions(job.job_name);
                     optionsContainer.innerHTML = '';
                     
@@ -170,15 +170,15 @@ if (!empty($jobs)) {
                         optionsContainer.appendChild(button);
                     });
                     
-                    // Reset result message
+                   
                     resultMessage.textContent = '';
                     resultMessage.className = 'result-message';
                     
-                    // Enable options
+                    
                     enableOptions(true);
                 }
                 
-                // Check the selected answer
+                
                 function checkAnswer(selectedJob) {
                     const correctJob = jobs[currentJobIndex].job_name;
                     
@@ -196,7 +196,7 @@ if (!empty($jobs)) {
                     
                     updateScore();
                     
-                    // Highlight correct answer and disable options
+                    
                     const options = optionsContainer.querySelectorAll('.option-btn');
                     options.forEach(option => {
                         if (option.dataset.job === correctJob) {
@@ -209,7 +209,7 @@ if (!empty($jobs)) {
                     enableOptions(false);
                 }
                 
-                // Enable/disable option buttons
+               
                 function enableOptions(enable) {
                     const options = optionsContainer.querySelectorAll('.option-btn');
                     options.forEach(option => {
@@ -217,7 +217,7 @@ if (!empty($jobs)) {
                     });
                 }
                 
-                // Event listeners
+                
                 playButton.addEventListener('click', function() {
                     jobAudio.play();
                 });
@@ -227,7 +227,7 @@ if (!empty($jobs)) {
                     displayJob(currentJobIndex);
                 });
                 
-                // Start the game
+                
                 displayJob(currentJobIndex);
             });
         </script>
