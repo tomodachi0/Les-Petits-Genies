@@ -2,7 +2,7 @@
 require_once '../includes/header.php';
 require_once '../includes/db_connect.php';
 
-// Get all flags from database
+
 try {
     $pdo = getDbConnection();
     $stmt = $pdo->query("SELECT * FROM flags");
@@ -12,7 +12,7 @@ try {
     $flags = [];
 }
 
-// Shuffle flags to randomize
+
 if (!empty($flags)) {
     shuffle($flags);
 }
@@ -54,7 +54,7 @@ if (!empty($flags)) {
             <div class="flag-question">
                 <h3>C'est le drapeau de quel pays?</h3>
                 <div class="options-container" id="options-container">
-                    <!-- Options will be inserted here by JavaScript -->
+                   
                 </div>
                 <div class="result-message" id="flag-result"></div>
             </div>
@@ -85,14 +85,14 @@ if (!empty($flags)) {
         
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Flag data from PHP
+              
                 const flags = <?php echo json_encode($flags); ?>;
                 let currentFlagIndex = 0;
                 let score = 0;
                 let correct = 0;
                 let incorrect = 0;
                 
-                // DOM elements
+           
                 const flagImage = document.getElementById('current-flag');
                 const flagAudio = document.getElementById('flag-audio');
                 const playButton = document.getElementById('play-audio');
@@ -103,37 +103,36 @@ if (!empty($flags)) {
                 const correctDisplay = document.getElementById('correct');
                 const incorrectDisplay = document.getElementById('incorrect');
                 
-                // Preload images for better performance
+             
                 flags.forEach(flag => {
                     const img = new Image();
                     img.src = '../' + flag.image_path;
                 });
                 
-                // Update score display
+                
                 function updateScore() {
                     scoreDisplay.textContent = score;
                     correctDisplay.textContent = correct;
                     incorrectDisplay.textContent = incorrect;
                 }
                 
-                // Get random options
                 function getRandomOptions(correctAnswer) {
-                    // Copy flags array and remove correct answer
+                    
                     const otherFlags = flags.filter(flag => flag.country_name !== correctAnswer);
                     
-                    // Shuffle other flags
+                  
                     for (let i = otherFlags.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [otherFlags[i], otherFlags[j]] = [otherFlags[j], otherFlags[i]];
                     }
                     
-                    // Take 3 random flags
+                   
                     const randomOptions = otherFlags.slice(0, 3);
                     
-                    // Add correct answer
+                   
                     randomOptions.push({ country_name: correctAnswer });
                     
-                    // Shuffle options
+                    
                     for (let i = randomOptions.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [randomOptions[i], randomOptions[j]] = [randomOptions[j], randomOptions[i]];
@@ -142,18 +141,18 @@ if (!empty($flags)) {
                     return randomOptions;
                 }
                 
-                // Display a flag and options
+             
                 function displayFlag(index) {
                     const flag = flags[index];
                     
-                    // Update flag image
+                   
                     flagImage.src = '../' + flag.image_path;
                     flagImage.alt = flag.country_name + ' Flag';
                     
-                    // Update audio
-                    flagAudio.src = '../' + flag.audio_path;
                     
-                    // Generate options
+                    flagAudio.src = '../' + flag.audio_path;
+
+                    
                     const options = getRandomOptions(flag.country_name);
                     optionsContainer.innerHTML = '';
                     
@@ -170,15 +169,15 @@ if (!empty($flags)) {
                         optionsContainer.appendChild(button);
                     });
                     
-                    // Reset result message
+                  
                     resultMessage.textContent = '';
                     resultMessage.className = 'result-message';
                     
-                    // Enable options
+                  
                     enableOptions(true);
                 }
                 
-                // Check the selected answer
+           
                 function checkAnswer(selectedCountry) {
                     const correctCountry = flags[currentFlagIndex].country_name;
                     
@@ -196,7 +195,7 @@ if (!empty($flags)) {
                     
                     updateScore();
                     
-                    // Highlight correct answer
+                    
                     const options = optionsContainer.querySelectorAll('.option-btn');
                     options.forEach(option => {
                         if (option.dataset.country === correctCountry) {
@@ -206,11 +205,11 @@ if (!empty($flags)) {
                         }
                     });
                     
-                    // Disable options after answer
+                    
                     enableOptions(false);
                 }
                 
-                // Enable or disable option buttons
+                
                 function enableOptions(enable) {
                     const options = optionsContainer.querySelectorAll('.option-btn');
                     options.forEach(option => {
@@ -218,18 +217,18 @@ if (!empty($flags)) {
                     });
                 }
                 
-                // Next flag button
+               
                 nextButton.addEventListener('click', function() {
                     currentFlagIndex = (currentFlagIndex + 1) % flags.length;
                     displayFlag(currentFlagIndex);
                 });
                 
-                // Play audio button
+               
                 playButton.addEventListener('click', function() {
                     flagAudio.play();
                 });
                 
-                // Initialize with first flag
+                
                 if (flags.length > 0) {
                     displayFlag(0);
                 }
