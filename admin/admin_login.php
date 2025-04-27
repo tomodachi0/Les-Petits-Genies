@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 // Start session and clear any existing session data
 session_start();
 
-// Debug session state
+
 error_log("Initial session state: " . print_r($_SESSION, true));
 
 // Check if already logged in
@@ -17,7 +17,6 @@ if (isset($_SESSION['admin_id'])) {
 
 require_once '../includes/db_connect.php';
 
-// Check if already logged in
 if (isset($_SESSION['admin_id'])) {
     header("Location: admin_dashboard.php");
     exit;
@@ -27,7 +26,7 @@ $error = '';
 
 // Process login form
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validate CSRF token
+ 
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error = "Invalid form submission";
     } else {
@@ -40,13 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             try {
                 $pdo = getDbConnection();
                 
-                // Debug connection
                 error_log("Database connection established");
                 
                 $stmt = $pdo->prepare("SELECT id, username, password FROM admin_users WHERE username = :username LIMIT 1");
                 $stmt->bindParam(':username', $username, PDO::PARAM_STR);
                 
-                // Debug query parameters
+              
                 error_log("Attempting login for username: " . $username);
                 
                 $stmt->execute();
@@ -59,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     // Verify password
                     if ($password === $user['password']) {
                         error_log("Password match successful");
-                        // Clear any existing session data
+                      
                         $_SESSION = array();
                         
                         // Set new session variables
@@ -89,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Generate CSRF token
+
 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 ?>
 <!DOCTYPE html>
