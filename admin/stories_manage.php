@@ -1,9 +1,10 @@
 <?php
+ob_start();
 session_start();
 require_once '../includes/db_connect.php';
 
 // Authentication check
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['admin_id'])) {
     header("Location: admin_login.php");
     exit;
 }
@@ -14,12 +15,9 @@ $success = '';
 $story = [
     'id' => '',
     'title' => '',
-    'author' => '',
-    'content' => '',
-    'moral' => '',
-    'age_group' => '',
-    'category' => '',
-    'image_path' => ''
+    'description' => '',
+    'youtube_link' => '',
+    'thumbnail_path' => ''
 ];
 
 // Generate CSRF token if not exists
@@ -35,24 +33,28 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
     try {
-        // Get current file path for deletion
-        $stmt = $pdo->prepare("SELECT image_path FROM stories WHERE id = :id");
+        // Get current thumbnail path for deletion
+        $stmt = $pdo->prepare("SELECT thumbnail_path FROM stories WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         $story = $stmt->fetch();
         
         if ($story) {
-            // Delete image file from server
-            if (!empty($story['image_path']) && file_exists("../" . $story['image_path'])) {
-                unlink("../" . $story['image_path']);
+            // Delete thumbnail file from server
+            if (!empty($story['thumbnail_path']) && file_exists("../" . $story['thumbnail_path'])) {
+                unlink("../" . $story['thumbnail_path']);
             }
             
             // Delete from database
             $stmt = $pdo->prepare("DELETE FROM stories WHERE id = :id");
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            $success = "Story deleted successfully";
+            if ($stmt->execute()) {
+                $success = "Story deleted successfully";
+                header("Location: stories_manage.php"); // Redirect to refresh the page
+                exit;
+            } else {
+                $error = "Failed to delete story";
+            }
         }
     } catch (PDOException $e) {
         error_log("Delete error: " . $e->getMessage());
@@ -89,98 +91,71 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Get form data
         $id = isset($_POST['id']) ? filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) : null;
         $title = trim(filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING));
-        $author = trim(filter_input(INPUT_POST, 'author', FILTER_SANITIZE_STRING));
-        $content = trim(filter_input(INPUT_POST, 'content', FILTER_SANITIZE_STRING));
-        $moral = trim(filter_input(INPUT_POST, 'moral', FILTER_SANITIZE_STRING));
-        $age_group = trim(filter_input(INPUT_POST, 'age_group', FILTER_SANITIZE_STRING));
-        $category = trim(filter_input(INPUT_POST, 'category', FILTER_SANITIZE_STRING));
+        $description = trim(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
+        $youtube_link = trim(filter_input(INPUT_POST, 'youtube_link', FILTER_SANITIZE_URL));
+        // DEBUG: Output submitted values
+        // echo "<pre>Submitted: "; var_dump($_POST); echo "</pre>";
         
         // Validate input
         if (empty($title)) {
             $error = "Story title is required";
-        } elseif (empty($content)) {
-            $error = "Story content is required";
-        } elseif (empty($category)) {
-            $error = "Story category is required";
+        } elseif (strlen($title) > 255) {
+            $error = "Title must be less than 255 characters";
+        } elseif (empty($description)) {
+            $error = "Story description is required";
+        } elseif (empty($youtube_link)) {
+            $error = "YouTube link is required";
+        } elseif (!filter_var($youtube_link, FILTER_VALIDATE_URL)) {
+            $error = "Invalid YouTube link format";
         } else {
             try {
-                // Handle file upload
-                $image_path = isset($story['image_path']) ? $story['image_path'] : '';
+                // Get thumbnail path from form
+                $thumbnail_path = trim(filter_input(INPUT_POST, 'thumbnail_path', FILTER_SANITIZE_STRING));
                 
-                if (!empty($_FILES['image']['name'])) {
-                    $image_dir = "../images/stories/";
-                    if (!is_dir($image_dir)) {
-                        mkdir($image_dir, 0755, true);
-                    }
-                    
-                    $image_filename = time() . '_' . basename($_FILES['image']['name']);
-                    $image_path = "images/stories/" . $image_filename;
-                    $image_target = $image_dir . $image_filename;
-                    
-                    // Check file type
-                    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-                    if (!in_array($_FILES['image']['type'], $allowed_types)) {
-                        $error = "Only JPG, PNG, and GIF images are allowed";
-                    } elseif ($_FILES['image']['size'] > 2097152) { // 2MB limit
-                        $error = "Image size should be less than 2MB";
-                    } elseif (!move_uploaded_file($_FILES['image']['tmp_name'], $image_target)) {
-                        $error = "Failed to upload image";
-                    }
+                // Validate path
+                if (empty($thumbnail_path)) {
+                    $error = "Thumbnail path is required";
+                } elseif (!preg_match('/^images\/stories\/[\w-]+\.(jpg|jpeg|png|gif)$/i', $thumbnail_path)) {
+                    $error = "Invalid thumbnail path format. Must be in format: images/stories/filename.jpg";
+                } elseif (!file_exists("../" . $thumbnail_path)) {
+                    $error = "Thumbnail file does not exist in the specified path";
                 }
                 
                 // If no errors, save to database
                 if (empty($error)) {
                     if ($id) {
                         // Update existing record
-                        $stmt = $pdo->prepare("UPDATE stories SET title = :title, author = :author, 
-                                             content = :content, moral = :moral, age_group = :age_group, 
-                                             category = :category, image_path = :image_path,
-                                             updated_at = NOW()
+                        $stmt = $pdo->prepare("UPDATE stories SET title = :title, description = :description, 
+                                             youtube_link = :youtube_link, thumbnail_path = :thumbnail_path
                                              WHERE id = :id");
+                        $stmt->bindParam(':title', $title);
+                        $stmt->bindParam(':description', $description);
+                        $stmt->bindParam(':youtube_link', $youtube_link);
+                        $stmt->bindParam(':thumbnail_path', $thumbnail_path);
                         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-                        $stmt->bindParam(':author', $author, PDO::PARAM_STR);
-                        $stmt->bindParam(':content', $content, PDO::PARAM_STR);
-                        $stmt->bindParam(':moral', $moral, PDO::PARAM_STR);
-                        $stmt->bindParam(':age_group', $age_group, PDO::PARAM_STR);
-                        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
-                        $stmt->bindParam(':image_path', $image_path, PDO::PARAM_STR);
                         $stmt->execute();
                         
-                        $success = "Story updated successfully";
+                        // Redirect after update
+                        header("Location: stories_manage.php?updated=1");
+                        exit;
                     } else {
                         // Insert new record
-                        $stmt = $pdo->prepare("INSERT INTO stories (title, author, content, moral, 
-                                             age_group, category, image_path, created_at, updated_at) 
-                                             VALUES (:title, :author, :content, :moral, 
-                                             :age_group, :category, :image_path, NOW(), NOW())");
-                        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-                        $stmt->bindParam(':author', $author, PDO::PARAM_STR);
-                        $stmt->bindParam(':content', $content, PDO::PARAM_STR);
-                        $stmt->bindParam(':moral', $moral, PDO::PARAM_STR);
-                        $stmt->bindParam(':age_group', $age_group, PDO::PARAM_STR);
-                        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
-                        $stmt->bindParam(':image_path', $image_path, PDO::PARAM_STR);
+                        $stmt = $pdo->prepare("INSERT INTO stories (title, description, youtube_link, thumbnail_path)
+                                             VALUES (:title, :description, :youtube_link, :thumbnail_path)");
+                        $stmt->bindParam(':title', $title);
+                        $stmt->bindParam(':description', $description);
+                        $stmt->bindParam(':youtube_link', $youtube_link);
+                        $stmt->bindParam(':thumbnail_path', $thumbnail_path);
                         $stmt->execute();
-                        
-                        $success = "Story added successfully";
+                        // Redirect after add
+                        header("Location: stories_manage.php?success=1");
+                        exit;
                     }
-                    
-                    // Reset form after successful submission
-                    $story = [
-                        'id' => '',
-                        'title' => '',
-                        'author' => '',
-                        'content' => '',
-                        'moral' => '',
-                        'age_group' => '',
-                        'category' => '',
-                        'image_path' => ''
-                    ];
+                    // (No need to reset $story here due to redirect)
                 }
             } catch (PDOException $e) {
                 error_log("Save error: " . $e->getMessage());
-                $error = "Error saving story data";
+                $error = "Error saving story data: " . $e->getMessage();
             }
         }
     }
@@ -257,10 +232,18 @@ try {
                 </div>
             </div>
             
+            <?php if (isset($_GET['success'])): ?>
+                <div class="alert alert-success">Story added successfully.</div>
+            <?php endif; ?>
+            <?php if (isset($_GET['updated'])): ?>
+                <div class="alert alert-success">Story updated successfully.</div>
+            <?php endif; ?>
+            <?php if (isset($_GET['deleted'])): ?>
+                <div class="alert alert-success">Story deleted successfully.</div>
+            <?php endif; ?>
             <?php if ($error): ?>
                 <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
-            
             <?php if ($success): ?>
                 <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
             <?php endif; ?>
@@ -284,65 +267,35 @@ try {
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="author">Author:</label>
-                                    <input type="text" id="author" name="author" 
-                                           value="<?php echo htmlspecialchars($story['author']); ?>" required>
+                                    <label for="description">Story Description:</label>
+                                    <textarea id="description" name="description" rows="4" required><?php echo htmlspecialchars($story['description']); ?></textarea>
                                 </div>
                                 
-                                <div class="form-group">
-                                    <label for="category">Category:</label>
-                                    <select id="category" name="category" required>
-                                        <option value="">-- Select Category --</option>
-                                        <option value="Fable" <?php echo ($story['category'] == 'Fable') ? 'selected' : ''; ?>>Fable</option>
-                                        <option value="Fairy Tale" <?php echo ($story['category'] == 'Fairy Tale') ? 'selected' : ''; ?>>Fairy Tale</option>
-                                        <option value="Folktale" <?php echo ($story['category'] == 'Folktale') ? 'selected' : ''; ?>>Folktale</option>
-                                        <option value="Myth" <?php echo ($story['category'] == 'Myth') ? 'selected' : ''; ?>>Myth</option>
-                                        <option value="Legend" <?php echo ($story['category'] == 'Legend') ? 'selected' : ''; ?>>Legend</option>
-                                        <option value="Adventure" <?php echo ($story['category'] == 'Adventure') ? 'selected' : ''; ?>>Adventure</option>
-                                        <option value="Fantasy" <?php echo ($story['category'] == 'Fantasy') ? 'selected' : ''; ?>>Fantasy</option>
-                                        <option value="Historical" <?php echo ($story['category'] == 'Historical') ? 'selected' : ''; ?>>Historical</option>
-                                        <option value="Educational" <?php echo ($story['category'] == 'Educational') ? 'selected' : ''; ?>>Educational</option>
-                                        <option value="Other" <?php echo ($story['category'] == 'Other') ? 'selected' : ''; ?>>Other</option>
-                                    </select>
-                                </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="age_group">Age Group:</label>
-                                    <select id="age_group" name="age_group" required>
-                                        <option value="">-- Select Age Group --</option>
-                                        <option value="3-5 years" <?php echo ($story['age_group'] == '3-5 years') ? 'selected' : ''; ?>>3-5 years</option>
-                                        <option value="6-8 years" <?php echo ($story['age_group'] == '6-8 years') ? 'selected' : ''; ?>>6-8 years</option>
-                                        <option value="9-12 years" <?php echo ($story['age_group'] == '9-12 years') ? 'selected' : ''; ?>>9-12 years</option>
-                                        <option value="All ages" <?php echo ($story['age_group'] == 'All ages') ? 'selected' : ''; ?>>All ages</option>
-                                    </select>
+                                    <label for="youtube_link">YouTube Link:</label>
+                                    <input type="url" id="youtube_link" name="youtube_link" maxlength="255"
+                                           value="<?php echo htmlspecialchars($story['youtube_link']); ?>" required
+                                           placeholder="https://www.youtube.com/embed/...">
+                                    <small>Enter the embedded YouTube video URL</small>
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="image">Story Image:</label>
-                                    <?php if (!empty($story['image_path'])): ?>
-                                        <div class="current-file">
-                                            <img src="<?php echo '../' . htmlspecialchars($story['image_path']); ?>" width="100" height="auto">
-                                            <span>Current: <?php echo htmlspecialchars($story['image_path']); ?></span>
+                                    <label for="thumbnail_path">Thumbnail Path:</label>
+                                    <input type="text" id="thumbnail_path" name="thumbnail_path" 
+                                           value="<?php echo htmlspecialchars($story['thumbnail_path']); ?>" 
+                                           placeholder="images/stories/example.jpg" <?php echo empty($story['id']) ? 'required' : ''; ?>>
+                                    <small>Enter the path to the thumbnail file (relative to website root)</small>
+                                    <?php if (!empty($story['thumbnail_path'])): ?>
+                                        <div class="mt-2">
+                                            <img src="<?php echo '../' . htmlspecialchars($story['thumbnail_path']); ?>" width="100" height="auto">
+                                            <p>Current: <?php echo htmlspecialchars($story['thumbnail_path']); ?></p>
                                         </div>
                                     <?php endif; ?>
-                                    <input type="file" id="image" name="image" <?php echo empty($story['id']) ? 'required' : ''; ?>>
-                                    <small>Upload JPG, PNG or GIF (max 2MB). Image representing this story.</small>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="content">Story Content:</label>
-                            <textarea id="content" name="content" rows="10" required><?php echo htmlspecialchars($story['content']); ?></textarea>
-                            <small>The full text of the story. Use paragraphs to make it easy to read.</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="moral">Moral or Lesson (if any):</label>
-                            <textarea id="moral" name="moral" rows="3"><?php echo htmlspecialchars($story['moral']); ?></textarea>
-                            <small>The moral or lesson of the story, if applicable.</small>
                         </div>
                         
                         <div class="form-buttons">
@@ -365,11 +318,10 @@ try {
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Image</th>
+                                <th>Thumbnail</th>
                                 <th>Title</th>
-                                <th>Author</th>
-                                <th>Category</th>
-                                <th>Age Group</th>
+                                <th>Description</th>
+                                <th>YouTube Link</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -383,17 +335,21 @@ try {
                                     <tr>
                                         <td><?php echo htmlspecialchars($item['id']); ?></td>
                                         <td>
-                                            <?php if (!empty($item['image_path'])): ?>
-                                                <img src="<?php echo '../' . htmlspecialchars($item['image_path']); ?>" 
-                                                     width="50" height="auto" alt="<?php echo htmlspecialchars($item['title']); ?>">
+                                            <?php if (!empty($item['thumbnail_path'])): ?>
+                                                <img src="<?php echo '../' . htmlspecialchars($item['thumbnail_path']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($item['title']); ?>" 
+                                                     width="50" height="50">
                                             <?php else: ?>
-                                                <span class="text-muted">No image</span>
+                                                No thumbnail
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo htmlspecialchars($item['title']); ?></td>
-                                        <td><?php echo htmlspecialchars($item['author']); ?></td>
-                                        <td><?php echo htmlspecialchars($item['category']); ?></td>
-                                        <td><?php echo htmlspecialchars($item['age_group']); ?></td>
+                                        <td><?php echo substr(htmlspecialchars($item['description']), 0, 100) . '...'; ?></td>
+                                        <td>
+                                            <a href="<?php echo htmlspecialchars($item['youtube_link']); ?>" target="_blank">
+                                                View Video
+                                            </a>
+                                        </td>
                                         <td>
                                             <div class="action-buttons">
                                                 <a href="stories_manage.php?action=edit&id=<?php echo $item['id']; ?>" 

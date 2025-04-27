@@ -2,6 +2,15 @@
 CREATE DATABASE IF NOT EXISTS children_edu;
 USE children_edu;
 
+-- Create admin_users table
+CREATE TABLE IF NOT EXISTS admin_users (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -43,9 +52,14 @@ CREATE TABLE IF NOT EXISTS stories (
     thumbnail_path VARCHAR(255) NOT NULL
 );
 
+-- Insert default admin user
+INSERT INTO admin_users (username, password, email) 
+VALUES ('admin', 'admin123', 'admin@example.com')
+ON DUPLICATE KEY UPDATE id=id;
+
 -- Insert sample users
 INSERT INTO users (username, password, created_at) VALUES
-('admin', '$2y$10$HvMaJ5.XdZQJYXCGO/BH4.KqzQvTEcsEe/F9p9HVNQGB.ZM.EUE.2', NOW()); -- password: admin123
+('demo', '$2y$10$HvMaJ5.XdZQJYXCGO/BH4.KqzQvTEcsEe/F9p9HVNQGB.ZM.EUE.2', NOW()); -- password: demo123
 
 -- Insert sample flags
 INSERT INTO flags (country_name, image_path, audio_path) VALUES

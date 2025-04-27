@@ -2,8 +2,11 @@
 session_start();
 require_once '../includes/db_connect.php';
 
+// Debug session data
+error_log("Session data in dashboard: " . print_r($_SESSION, true));
+
 // Authentication check
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['admin_id'])) {
     header("Location: admin_login.php");
     exit;
 }

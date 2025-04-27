@@ -3,7 +3,7 @@ session_start();
 require_once '../includes/db_connect.php';
 
 // Authentication check
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['admin_id'])) {
     header("Location: admin_login.php");
     exit;
 }
@@ -95,52 +95,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Country name is required";
         } else {
             try {
-                // Handle file uploads
-                $image_path = isset($flag['image_path']) ? $flag['image_path'] : '';
-                $audio_path = isset($flag['audio_path']) ? $flag['audio_path'] : '';
+                // Get file paths from form
+                $image_path = trim(filter_input(INPUT_POST, 'image_path', FILTER_SANITIZE_STRING));
+                $audio_path = trim(filter_input(INPUT_POST, 'audio_path', FILTER_SANITIZE_STRING));
                 
-                // Handle image upload
-                if (!empty($_FILES['image']['name'])) {
-                    $image_dir = "../images/flags/";
-                    if (!is_dir($image_dir)) {
-                        mkdir($image_dir, 0755, true);
-                    }
-                    
-                    $image_filename = time() . '_' . basename($_FILES['image']['name']);
-                    $image_path = "images/flags/" . $image_filename;
-                    $image_target = $image_dir . $image_filename;
-                    
-                    // Check file type
-                    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-                    if (!in_array($_FILES['image']['type'], $allowed_types)) {
-                        $error = "Only JPG, PNG, and GIF images are allowed";
-                    } elseif ($_FILES['image']['size'] > 2097152) { // 2MB limit
-                        $error = "Image size should be less than 2MB";
-                    } elseif (!move_uploaded_file($_FILES['image']['tmp_name'], $image_target)) {
-                        $error = "Failed to upload image";
-                    }
+                // Validate paths
+                if (empty($image_path)) {
+                    $error = "Image path is required";
+                } elseif (!preg_match('/^images\/flags\/[\w-]+\.(jpg|jpeg|png|gif)$/i', $image_path)) {
+                    $error = "Invalid image path format. Must be in format: images/flags/filename.jpg";
+                } elseif (!file_exists("../" . $image_path)) {
+                    $error = "Image file does not exist in the specified path";
                 }
                 
-                // Handle audio upload
-                if (!empty($_FILES['audio']['name'])) {
-                    $audio_dir = "../audio/flags/";
-                    if (!is_dir($audio_dir)) {
-                        mkdir($audio_dir, 0755, true);
-                    }
-                    
-                    $audio_filename = time() . '_' . basename($_FILES['audio']['name']);
-                    $audio_path = "audio/flags/" . $audio_filename;
-                    $audio_target = $audio_dir . $audio_filename;
-                    
-                    // Check file type
-                    $allowed_types = ['audio/mp3', 'audio/mpeg', 'audio/wav'];
-                    if (!in_array($_FILES['audio']['type'], $allowed_types)) {
-                        $error = "Only MP3 and WAV audio files are allowed";
-                    } elseif ($_FILES['audio']['size'] > 5242880) { // 5MB limit
-                        $error = "Audio size should be less than 5MB";
-                    } elseif (!move_uploaded_file($_FILES['audio']['tmp_name'], $audio_target)) {
-                        $error = "Failed to upload audio";
-                    }
+                if (empty($audio_path)) {
+                    $error = "Audio path is required";
+                } elseif (!preg_match('/^audio\/flags\/[\w-]+\.(mp3|wav|ogg)$/i', $audio_path)) {
+                    $error = "Invalid audio path format. Must be in format: audio/flags/filename.mp3";
+                } elseif (!file_exists("../" . $audio_path)) {
+                    $error = "Audio file does not exist in the specified path";
                 }
                 
                 // If no errors, save to database
@@ -259,7 +232,7 @@ try {
                 </div>
                 
                 <div class="panel-body">
-                    <form method="post" action="flags_manage.php" enctype="multipart/form-data">
+                    <form method="post" action="flags_manage.php">
                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                         <input type="hidden" name="id" value="<?php echo htmlspecialchars($flag['id']); ?>">
                         
@@ -270,30 +243,34 @@ try {
                         </div>
                         
                         <div class="form-group">
-                            <label for="image">Flag Image:</label>
+                            <label for="image_path">Image Path:</label>
+                            <input type="text" id="image_path" name="image_path" 
+                                   value="<?php echo htmlspecialchars($flag['image_path']); ?>" 
+                                   placeholder="images/flags/example.jpg" <?php echo empty($flag['id']) ? 'required' : ''; ?>>
+                            <small>Enter the path to the image file (relative to website root)</small>
                             <?php if (!empty($flag['image_path'])): ?>
-                                <div class="current-file">
+                                <div class="mt-2">
                                     <img src="<?php echo '../' . htmlspecialchars($flag['image_path']); ?>" width="100" height="auto">
-                                    <span>Current: <?php echo htmlspecialchars($flag['image_path']); ?></span>
+                                    <p>Current: <?php echo htmlspecialchars($flag['image_path']); ?></p>
                                 </div>
                             <?php endif; ?>
-                            <input type="file" id="image" name="image" <?php echo empty($flag['id']) ? 'required' : ''; ?>>
-                            <small>Upload JPG, PNG or GIF (max 2MB)</small>
                         </div>
                         
                         <div class="form-group">
-                            <label for="audio">Audio Pronunciation:</label>
+                            <label for="audio_path">Audio Path:</label>
+                            <input type="text" id="audio_path" name="audio_path" 
+                                   value="<?php echo htmlspecialchars($flag['audio_path']); ?>" 
+                                   placeholder="audio/flags/example.mp3" <?php echo empty($flag['id']) ? 'required' : ''; ?>>
+                            <small>Enter the path to the audio file (relative to website root)</small>
                             <?php if (!empty($flag['audio_path'])): ?>
-                                <div class="current-file">
+                                <div class="mt-2">
                                     <audio controls>
                                         <source src="<?php echo '../' . htmlspecialchars($flag['audio_path']); ?>" type="audio/mpeg">
                                         Your browser does not support the audio element.
                                     </audio>
-                                    <span>Current: <?php echo htmlspecialchars($flag['audio_path']); ?></span>
+                                    <p>Current: <?php echo htmlspecialchars($flag['audio_path']); ?></p>
                                 </div>
                             <?php endif; ?>
-                            <input type="file" id="audio" name="audio" <?php echo empty($flag['id']) ? 'required' : ''; ?>>
-                            <small>Upload MP3 or WAV (max 5MB)</small>
                         </div>
                         
                         <div class="form-buttons">

@@ -3,7 +3,7 @@ session_start();
 require_once '../includes/db_connect.php';
 
 // Authentication check
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['admin_id'])) {
     header("Location: admin_login.php");
     exit;
 }
@@ -13,15 +13,9 @@ $error = '';
 $success = '';
 $job = [
     'id' => '',
-    'title' => '',
-    'category' => '',
-    'description' => '',
-    'responsibilities' => '',
-    'work_environment' => '',
-    'education_required' => '',
-    'skills_required' => '',
-    'salary_range' => '',
-    'image_path' => ''
+    'job_name' => '',
+    'image_path' => '',
+    'audio_path' => ''
 ];
 
 // Generate CSRF token if not exists
@@ -90,88 +84,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         // Get form data
         $id = isset($_POST['id']) ? filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) : null;
-        $title = trim(filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING));
-        $category = trim(filter_input(INPUT_POST, 'category', FILTER_SANITIZE_STRING));
-        $description = trim(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
-        $responsibilities = trim(filter_input(INPUT_POST, 'responsibilities', FILTER_SANITIZE_STRING));
-        $work_environment = trim(filter_input(INPUT_POST, 'work_environment', FILTER_SANITIZE_STRING));
-        $education_required = trim(filter_input(INPUT_POST, 'education_required', FILTER_SANITIZE_STRING));
-        $skills_required = trim(filter_input(INPUT_POST, 'skills_required', FILTER_SANITIZE_STRING));
-        $salary_range = trim(filter_input(INPUT_POST, 'salary_range', FILTER_SANITIZE_STRING));
+        $job_name = trim(filter_input(INPUT_POST, 'job_name', FILTER_SANITIZE_STRING));
         
         // Validate input
-        if (empty($title)) {
-            $error = "Job title is required";
-        } elseif (empty($category)) {
-            $error = "Category is required";
-        } elseif (empty($description)) {
-            $error = "Description is required";
+        if (empty($job_name)) {
+            $error = "Job name is required";
+        } elseif (strlen($job_name) > 100) {
+            $error = "Job name must be less than 100 characters";
         } else {
             try {
-                // Handle file upload
-                $image_path = isset($job['image_path']) ? $job['image_path'] : '';
+                // Get file paths from form
+                $image_path = trim(filter_input(INPUT_POST, 'image_path', FILTER_SANITIZE_STRING));
+                $audio_path = trim(filter_input(INPUT_POST, 'audio_path', FILTER_SANITIZE_STRING));
                 
-                if (!empty($_FILES['image']['name'])) {
-                    $image_dir = "../images/jobs/";
-                    if (!is_dir($image_dir)) {
-                        mkdir($image_dir, 0755, true);
-                    }
-                    
-                    $image_filename = time() . '_' . basename($_FILES['image']['name']);
-                    $image_path = "images/jobs/" . $image_filename;
-                    $image_target = $image_dir . $image_filename;
-                    
-                    // Check file type
-                    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-                    if (!in_array($_FILES['image']['type'], $allowed_types)) {
-                        $error = "Only JPG, PNG, and GIF images are allowed";
-                    } elseif ($_FILES['image']['size'] > 2097152) { // 2MB limit
-                        $error = "Image size should be less than 2MB";
-                    } elseif (!move_uploaded_file($_FILES['image']['tmp_name'], $image_target)) {
-                        $error = "Failed to upload image";
-                    }
+                // Validate paths
+                if (empty($image_path)) {
+                    $error = "Image path is required";
+                } elseif (!preg_match('/^images\/jobs\/[\w-]+\.(jpg|jpeg|png|gif)$/i', $image_path)) {
+                    $error = "Invalid image path format. Must be in format: images/jobs/filename.jpg";
+                } elseif (!file_exists("../" . $image_path)) {
+                    $error = "Image file does not exist in the specified path";
+                }
+                
+                if (empty($audio_path)) {
+                    $error = "Audio path is required";
+                } elseif (!preg_match('/^audio\/jobs\/[\w-]+\.(mp3|wav|ogg)$/i', $audio_path)) {
+                    $error = "Invalid audio path format. Must be in format: audio/jobs/filename.mp3";
+                } elseif (!file_exists("../" . $audio_path)) {
+                    $error = "Audio file does not exist in the specified path";
                 }
                 
                 // If no errors, save to database
                 if (empty($error)) {
                     if ($id) {
                         // Update existing record
-                        $stmt = $pdo->prepare("UPDATE jobs SET title = :title, category = :category, 
-                                             description = :description, responsibilities = :responsibilities, 
-                                             work_environment = :work_environment, education_required = :education_required, 
-                                             skills_required = :skills_required, salary_range = :salary_range, 
-                                             image_path = :image_path, updated_at = NOW()
+                        $stmt = $pdo->prepare("UPDATE jobs SET job_name = :job_name, 
+                                             image_path = :image_path, audio_path = :audio_path
                                              WHERE id = :id");
+                        $stmt->bindParam(':job_name', $job_name);
+                        $stmt->bindParam(':image_path', $image_path);
+                        $stmt->bindParam(':audio_path', $audio_path);
                         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-                        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
-                        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
-                        $stmt->bindParam(':responsibilities', $responsibilities, PDO::PARAM_STR);
-                        $stmt->bindParam(':work_environment', $work_environment, PDO::PARAM_STR);
-                        $stmt->bindParam(':education_required', $education_required, PDO::PARAM_STR);
-                        $stmt->bindParam(':skills_required', $skills_required, PDO::PARAM_STR);
-                        $stmt->bindParam(':salary_range', $salary_range, PDO::PARAM_STR);
-                        $stmt->bindParam(':image_path', $image_path, PDO::PARAM_STR);
                         $stmt->execute();
                         
                         $success = "Job updated successfully";
                     } else {
                         // Insert new record
-                        $stmt = $pdo->prepare("INSERT INTO jobs (title, category, description, responsibilities, 
-                                             work_environment, education_required, skills_required, salary_range, 
-                                             image_path, created_at, updated_at) 
-                                             VALUES (:title, :category, :description, :responsibilities, 
-                                             :work_environment, :education_required, :skills_required, :salary_range, 
-                                             :image_path, NOW(), NOW())");
-                        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-                        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
-                        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
-                        $stmt->bindParam(':responsibilities', $responsibilities, PDO::PARAM_STR);
-                        $stmt->bindParam(':work_environment', $work_environment, PDO::PARAM_STR);
-                        $stmt->bindParam(':education_required', $education_required, PDO::PARAM_STR);
-                        $stmt->bindParam(':skills_required', $skills_required, PDO::PARAM_STR);
-                        $stmt->bindParam(':salary_range', $salary_range, PDO::PARAM_STR);
-                        $stmt->bindParam(':image_path', $image_path, PDO::PARAM_STR);
+                        $stmt = $pdo->prepare("INSERT INTO jobs (job_name, image_path, audio_path)
+                                             VALUES (:job_name, :image_path, :audio_path)");
+                        $stmt->bindParam(':job_name', $job_name);
+                        $stmt->bindParam(':image_path', $image_path);
+                        $stmt->bindParam(':audio_path', $audio_path);
                         $stmt->execute();
                         
                         $success = "Job added successfully";
@@ -211,7 +174,7 @@ try {
     $totalPages = ceil($totalJobs / $perPage);
     
     // Get paginated records
-    $stmt = $pdo->prepare("SELECT * FROM jobs ORDER BY title LIMIT :offset, :perPage");
+    $stmt = $pdo->prepare("SELECT * FROM jobs ORDER BY job_name LIMIT :offset, :perPage");
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
     $stmt->execute();
@@ -280,77 +243,45 @@ try {
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="title">Job Title:</label>
-                                    <input type="text" id="title" name="title" 
-                                           value="<?php echo htmlspecialchars($job['title']); ?>" required>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="category">Category:</label>
-                                    <select id="category" name="category" required>
-                                        <option value="">-- Select Category --</option>
-                                        <option value="Healthcare" <?php echo ($job['category'] == 'Healthcare') ? 'selected' : ''; ?>>Healthcare</option>
-                                        <option value="Education" <?php echo ($job['category'] == 'Education') ? 'selected' : ''; ?>>Education</option>
-                                        <option value="Science" <?php echo ($job['category'] == 'Science') ? 'selected' : ''; ?>>Science</option>
-                                        <option value="Technology" <?php echo ($job['category'] == 'Technology') ? 'selected' : ''; ?>>Technology</option>
-                                        <option value="Arts" <?php echo ($job['category'] == 'Arts') ? 'selected' : ''; ?>>Arts</option>
-                                        <option value="Environment" <?php echo ($job['category'] == 'Environment') ? 'selected' : ''; ?>>Environment</option>
-                                        <option value="Business" <?php echo ($job['category'] == 'Business') ? 'selected' : ''; ?>>Business</option>
-                                        <option value="Service" <?php echo ($job['category'] == 'Service') ? 'selected' : ''; ?>>Service</option>
-                                        <option value="Trades" <?php echo ($job['category'] == 'Trades') ? 'selected' : ''; ?>>Trades</option>
-                                        <option value="Other" <?php echo ($job['category'] == 'Other') ? 'selected' : ''; ?>>Other</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="education_required">Education Required:</label>
-                                    <input type="text" id="education_required" name="education_required" 
-                                           value="<?php echo htmlspecialchars($job['education_required']); ?>">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="salary_range">Salary Range:</label>
-                                    <input type="text" id="salary_range" name="salary_range" 
-                                           value="<?php echo htmlspecialchars($job['salary_range']); ?>">
+                                    <label for="job_name">Job Name:</label>
+                                    <input type="text" id="job_name" name="job_name" maxlength="100"
+                                           value="<?php echo htmlspecialchars($job['job_name']); ?>" required>
+                                    <small>Enter the name of the job (max 100 characters)</small>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="image">Job Image:</label>
+                                    <label for="image_path">Image Path:</label>
+                                    <input type="text" id="image_path" name="image_path" 
+                                           value="<?php echo htmlspecialchars($job['image_path']); ?>" 
+                                           placeholder="images/jobs/example.jpg" <?php echo empty($job['id']) ? 'required' : ''; ?>>
+                                    <small>Enter the path to the image file (relative to website root)</small>
                                     <?php if (!empty($job['image_path'])): ?>
-                                        <div class="current-file">
+                                        <div class="mt-2">
                                             <img src="<?php echo '../' . htmlspecialchars($job['image_path']); ?>" width="100" height="auto">
-                                            <span>Current: <?php echo htmlspecialchars($job['image_path']); ?></span>
+                                            <p>Current: <?php echo htmlspecialchars($job['image_path']); ?></p>
                                         </div>
                                     <?php endif; ?>
-                                    <input type="file" id="image" name="image" <?php echo empty($job['id']) ? 'required' : ''; ?>>
-                                    <small>Upload JPG, PNG or GIF (max 2MB). An image representing this occupation.</small>
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="skills_required">Skills Required:</label>
-                                    <textarea id="skills_required" name="skills_required" rows="3"><?php echo htmlspecialchars($job['skills_required']); ?></textarea>
+                                    <label for="audio_path">Audio Path:</label>
+                                    <input type="text" id="audio_path" name="audio_path" 
+                                           value="<?php echo htmlspecialchars($job['audio_path']); ?>" 
+                                           placeholder="audio/jobs/example.mp3" <?php echo empty($job['id']) ? 'required' : ''; ?>>
+                                    <small>Enter the path to the audio file (relative to website root)</small>
+                                    <?php if (!empty($job['audio_path'])): ?>
+                                        <div class="mt-2">
+                                            <audio controls>
+                                                <source src="<?php echo '../' . htmlspecialchars($job['audio_path']); ?>" type="audio/mpeg">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                            <p>Current: <?php echo htmlspecialchars($job['audio_path']); ?></p>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="description">Description:</label>
-                            <textarea id="description" name="description" rows="4" required><?php echo htmlspecialchars($job['description']); ?></textarea>
-                            <small>A simple explanation about what this job involves, suitable for children to understand.</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="responsibilities">Responsibilities:</label>
-                            <textarea id="responsibilities" name="responsibilities" rows="4"><?php echo htmlspecialchars($job['responsibilities']); ?></textarea>
-                            <small>Key duties and responsibilities of this job written in simple terms.</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="work_environment">Work Environment:</label>
-                            <textarea id="work_environment" name="work_environment" rows="4"><?php echo htmlspecialchars($job['work_environment']); ?></textarea>
-                            <small>Describe where this job typically takes place and what the work setting is like.</small>
                         </div>
                         
                         <div class="form-buttons">
@@ -374,9 +305,8 @@ try {
                             <tr>
                                 <th>ID</th>
                                 <th>Image</th>
-                                <th>Title</th>
-                                <th>Category</th>
-                                <th>Education Required</th>
+                                <th>Job Name</th>
+                                <th>Audio</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -392,14 +322,23 @@ try {
                                         <td>
                                             <?php if (!empty($item['image_path'])): ?>
                                                 <img src="<?php echo '../' . htmlspecialchars($item['image_path']); ?>" 
-                                                     width="50" height="auto" alt="<?php echo htmlspecialchars($item['title']); ?>">
+                                                     alt="<?php echo htmlspecialchars($item['job_name']); ?>" 
+                                                     width="50" height="50">
                                             <?php else: ?>
-                                                <span class="text-muted">No image</span>
+                                                No image
                                             <?php endif; ?>
                                         </td>
-                                        <td><?php echo htmlspecialchars($item['title']); ?></td>
-                                        <td><?php echo htmlspecialchars($item['category']); ?></td>
-                                        <td><?php echo htmlspecialchars($item['education_required']); ?></td>
+                                        <td><?php echo htmlspecialchars($item['job_name']); ?></td>
+                                        <td>
+                                            <?php if (!empty($item['audio_path'])): ?>
+                                                <audio controls>
+                                                    <source src="<?php echo '../' . htmlspecialchars($item['audio_path']); ?>" type="audio/mpeg">
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                            <?php else: ?>
+                                                No audio
+                                            <?php endif; ?>
+                                        </td>
                                         <td>
                                             <div class="action-buttons">
                                                 <a href="jobs_manage.php?action=edit&id=<?php echo $item['id']; ?>" 

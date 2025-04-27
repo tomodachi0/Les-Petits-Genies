@@ -17,6 +17,13 @@ session_start();
         <div class="logo">
             <h1><i class="fas fa-graduation-cap"></i> Kids Learning Zone</h1>
         </div>
+        <div class="admin-login-header" style="position:absolute;top:18px;right:30px;z-index:1000;">
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <a href="/educational-website/admin/admin_login.php" class="admin-login-link" style="font-size: 0.98em; color: #666; background: #f3f3f3; padding: 5px 14px; border-radius: 18px; text-decoration: none; border: 1px solid #ccc; transition: background 0.2s;">
+                    <i class="fas fa-lock"></i> Admin Login
+                </a>
+            <?php endif; ?>
+        </div>
         <nav>
             <ul class="main-nav">
                 <li><a href="/educational-website/public/index.php"><i class="fas fa-home"></i> Home</a></li>

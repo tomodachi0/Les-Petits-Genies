@@ -242,6 +242,27 @@ nav {
     }
 }
 
+/* Admin Login */
+.admin-login {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.admin-login a {
+    color: var(--text-color);
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+.admin-login a:hover {
+    opacity: 1;
+    color: var(--primary-color);
+}
+
+.admin-login i {
+    margin-right: 0.5rem;
+}
+
 /* Footer */
 footer {
     background-color: var(--dark-color);
@@ -380,6 +401,15 @@ footer {
     padding: 2rem;
     margin-bottom: 2rem;
     border-bottom: 1px solid var(--gray);
+}
+
+/* Quiz item display */
+.flag-display,
+.animal-display,
+.job-display {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
 }
 
 /* Score display */
@@ -547,10 +577,16 @@ footer {
     margin-bottom: 1rem;
 }
 
-/* Flags page styles */
-.flags-container {
-    max-width: 800px;
-    margin: 0 auto;
+/* Quiz game common styles */
+.flag-game,
+.animal-game,
+.job-game {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin-bottom: 3rem;
+    text-align: center;
 }
 
 .flag-game {
@@ -562,22 +598,15 @@ footer {
     text-align: center;
 }
 
-.flag-display {
-    position: relative;
-    margin-bottom: 1.5rem;
-}
-
-.flag-display img {
-    max-width: 100%;
-    height: auto;
-    max-height: 200px;
-    border: 1px solid var(--gray);
-}
-
-#play-audio {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
+/* Quiz question */
+.flag-question,
+.animal-question,
+.job-question {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
 }
 
 .flag-question h3 {
@@ -622,6 +651,79 @@ footer {
 .flags-info {
     margin-top: 3rem;
     text-align: center;
+}
+
+/* Stories Grid Layout */
+.stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.story-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.story-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.story-content {
+    padding: 1.5rem;
+}
+
+.story-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.story-description {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-radius);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
+}
+
+.pagination .btn {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .info-cards {

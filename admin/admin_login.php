@@ -1,9 +1,24 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Start session and clear any existing session data
 session_start();
+
+// Debug session state
+error_log("Initial session state: " . print_r($_SESSION, true));
+
+// Check if already logged in
+if (isset($_SESSION['admin_id'])) {
+    error_log("User already logged in, redirecting to dashboard");
+    header("Location: admin_dashboard.php");
+    exit();
+}
+
 require_once '../includes/db_connect.php';
 
 // Check if already logged in
-if (isset($_SESSION['user_id'])) {
+if (isset($_SESSION['admin_id'])) {
     header("Location: admin_dashboard.php");
     exit;
 }
@@ -24,23 +39,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             try {
                 $pdo = getDbConnection();
-                $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = :username LIMIT 1");
+                
+                // Debug connection
+                error_log("Database connection established");
+                
+                $stmt = $pdo->prepare("SELECT id, username, password FROM admin_users WHERE username = :username LIMIT 1");
                 $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+                
+                // Debug query parameters
+                error_log("Attempting login for username: " . $username);
+                
                 $stmt->execute();
                 
                 if ($user = $stmt->fetch()) {
+                    error_log("User found in database");
+                    error_log("Stored password: " . $user['password']);
+                    error_log("Provided password: " . $password);
+                    
                     // Verify password
-                    if (password_verify($password, $user['password'])) {
-                        // Set session
-                        $_SESSION['user_id'] = $user['id'];
-                        $_SESSION['username'] = $user['username'];
+                    if ($password === $user['password']) {
+                        error_log("Password match successful");
+                        // Clear any existing session data
+                        $_SESSION = array();
+                        
+                        // Set new session variables
+                        $_SESSION['admin_id'] = $user['id'];
+                        $_SESSION['admin_username'] = $user['username'];
                         
                         // Regenerate session ID for security
                         session_regenerate_id(true);
                         
+                        error_log("Login successful, session data: " . print_r($_SESSION, true));
+                        
                         // Redirect to dashboard
                         header("Location: admin_dashboard.php");
-                        exit;
+                        exit();
                     } else {
                         $error = "Invalid username or password";
                     }
@@ -48,8 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $error = "Invalid username or password";
                 }
             } catch (PDOException $e) {
-                error_log("Login error: " . $e->getMessage());
-                $error = "An error occurred during login";
+                $errorMessage = "Login error: " . $e->getMessage();
+                error_log($errorMessage);
+                $error = "Database error: " . $e->getMessage();  // Show actual error during development
             }
         }
     }
