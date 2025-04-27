@@ -20,7 +20,6 @@ $story = [
     'thumbnail_path' => ''
 ];
 
-// Generate CSRF token if not exists
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -33,14 +32,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
     try {
-        // Get current thumbnail path for deletion
         $stmt = $pdo->prepare("SELECT thumbnail_path FROM stories WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         $story = $stmt->fetch();
         
         if ($story) {
-            // Delete thumbnail file from server
             if (!empty($story['thumbnail_path']) && file_exists("../" . $story['thumbnail_path'])) {
                 unlink("../" . $story['thumbnail_path']);
             }
@@ -50,7 +47,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             if ($stmt->execute()) {
                 $success = "Story deleted successfully";
-                header("Location: stories_manage.php"); // Redirect to refresh the page
+                header("Location: stories_manage.php"); 
                 exit;
             } else {
                 $error = "Failed to delete story";
@@ -62,7 +59,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     }
 }
 
-// Handle edit action - load story data
+// Handle edit action 
 if (isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['id'])) {
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
@@ -84,19 +81,15 @@ if (isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['id'])) {
 
 // Handle form submission (add/edit)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validate CSRF token
+    
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error = "Invalid form submission";
     } else {
-        // Get form data
         $id = isset($_POST['id']) ? filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) : null;
         $title = trim(filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING));
         $description = trim(filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
         $youtube_link = trim(filter_input(INPUT_POST, 'youtube_link', FILTER_SANITIZE_URL));
-        // DEBUG: Output submitted values
-        // echo "<pre>Submitted: "; var_dump($_POST); echo "</pre>";
-        
-        // Validate input
+       
         if (empty($title)) {
             $error = "Story title is required";
         } elseif (strlen($title) > 255) {
@@ -109,10 +102,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Invalid YouTube link format";
         } else {
             try {
-                // Get thumbnail path from form
+              
                 $thumbnail_path = trim(filter_input(INPUT_POST, 'thumbnail_path', FILTER_SANITIZE_STRING));
                 
-                // Validate path
                 if (empty($thumbnail_path)) {
                     $error = "Thumbnail path is required";
                 } elseif (!preg_match('/^images\/stories\/[\w-]+\.(jpg|jpeg|png|gif)$/i', $thumbnail_path)) {
@@ -121,10 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $error = "Thumbnail file does not exist in the specified path";
                 }
                 
-                // If no errors, save to database
                 if (empty($error)) {
                     if ($id) {
-                        // Update existing record
                         $stmt = $pdo->prepare("UPDATE stories SET title = :title, description = :description, 
                                              youtube_link = :youtube_link, thumbnail_path = :thumbnail_path
                                              WHERE id = :id");
@@ -135,11 +125,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
                         $stmt->execute();
                         
-                        // Redirect after update
                         header("Location: stories_manage.php?updated=1");
                         exit;
                     } else {
-                        // Insert new record
                         $stmt = $pdo->prepare("INSERT INTO stories (title, description, youtube_link, thumbnail_path)
                                              VALUES (:title, :description, :youtube_link, :thumbnail_path)");
                         $stmt->bindParam(':title', $title);
@@ -147,11 +135,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $stmt->bindParam(':youtube_link', $youtube_link);
                         $stmt->bindParam(':thumbnail_path', $thumbnail_path);
                         $stmt->execute();
-                        // Redirect after add
                         header("Location: stories_manage.php?success=1");
                         exit;
                     }
-                    // (No need to reset $story here due to redirect)
+                 
                 }
             } catch (PDOException $e) {
                 error_log("Save error: " . $e->getMessage());
@@ -161,18 +148,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Get all stories for listing
+
 try {
     $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
     $perPage = 10;
     $offset = ($page - 1) * $perPage;
     
-    // Count total records
+  
     $stmt = $pdo->query("SELECT COUNT(*) FROM stories");
     $totalStories = $stmt->fetchColumn();
     $totalPages = ceil($totalStories / $perPage);
     
-    // Get paginated records
+ 
     $stmt = $pdo->prepare("SELECT * FROM stories ORDER BY title LIMIT :offset, :perPage");
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
@@ -194,7 +181,7 @@ try {
     <title>Manage Stories - Kids Learning Zone</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Include TinyMCE for rich text editing -->
+
     <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
