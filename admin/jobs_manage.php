@@ -18,7 +18,7 @@ $job = [
     'audio_path' => ''
 ];
 
-// Generate CSRF token if not exists
+
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -31,7 +31,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
     try {
-        // Get current file path for deletion
+      
         $stmt = $pdo->prepare("SELECT image_path FROM jobs WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -56,7 +56,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     }
 }
 
-// Handle edit action - load job data
+// Handle edit action 
 if (isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['id'])) {
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
@@ -76,28 +76,26 @@ if (isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['id'])) {
     }
 }
 
-// Handle form submission (add/edit)
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validate CSRF token
+ 
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error = "Invalid form submission";
     } else {
-        // Get form data
+        
         $id = isset($_POST['id']) ? filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) : null;
         $job_name = trim(filter_input(INPUT_POST, 'job_name', FILTER_SANITIZE_STRING));
         
-        // Validate input
+       
         if (empty($job_name)) {
             $error = "Job name is required";
         } elseif (strlen($job_name) > 100) {
             $error = "Job name must be less than 100 characters";
         } else {
             try {
-                // Get file paths from form
                 $image_path = trim(filter_input(INPUT_POST, 'image_path', FILTER_SANITIZE_STRING));
                 $audio_path = trim(filter_input(INPUT_POST, 'audio_path', FILTER_SANITIZE_STRING));
                 
-                // Validate paths
                 if (empty($image_path)) {
                     $error = "Image path is required";
                 } elseif (!preg_match('/^images\/jobs\/[\w-]+\.(jpg|jpeg|png|gif)$/i', $image_path)) {
@@ -114,10 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $error = "Audio file does not exist in the specified path";
                 }
                 
-                // If no errors, save to database
                 if (empty($error)) {
                     if ($id) {
-                        // Update existing record
                         $stmt = $pdo->prepare("UPDATE jobs SET job_name = :job_name, 
                                              image_path = :image_path, audio_path = :audio_path
                                              WHERE id = :id");
@@ -129,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         
                         $success = "Job updated successfully";
                     } else {
-                        // Insert new record
                         $stmt = $pdo->prepare("INSERT INTO jobs (job_name, image_path, audio_path)
                                              VALUES (:job_name, :image_path, :audio_path)");
                         $stmt->bindParam(':job_name', $job_name);
@@ -140,7 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $success = "Job added successfully";
                     }
                     
-                    // Reset form after successful submission
                     $job = [
                         'id' => '',
                         'title' => '',
@@ -162,18 +156,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Get all jobs for listing
 try {
     $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
     $perPage = 10;
     $offset = ($page - 1) * $perPage;
     
-    // Count total records
     $stmt = $pdo->query("SELECT COUNT(*) FROM jobs");
     $totalJobs = $stmt->fetchColumn();
     $totalPages = ceil($totalJobs / $perPage);
     
-    // Get paginated records
     $stmt = $pdo->prepare("SELECT * FROM jobs ORDER BY job_name LIMIT :offset, :perPage");
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
