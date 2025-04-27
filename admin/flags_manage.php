@@ -2,7 +2,7 @@
 session_start();
 require_once '../includes/db_connect.php';
 
-// Debug session data
+
 error_log("Session data in dashboard: " . print_r($_SESSION, true));
 
 // Authentication check
@@ -11,11 +11,10 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 }
 
-// Get statistics from database
 try {
     $pdo = getDbConnection();
     
-    // Count records in each table
+   
     $tables = ['flags', 'animals', 'jobs', 'stories'];
     $counts = [];
     
@@ -29,7 +28,7 @@ try {
     $error = "An error occurred while retrieving statistics";
 }
 
-// Include custom admin header
+
 $pageTitle = "Admin Dashboard";
 ?>
 <!DOCTYPE html>
