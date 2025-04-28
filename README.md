@@ -16,14 +16,10 @@
 - **Quiz sur les Métiers** : Explorez différentes professions et leurs rôles dans la société.
 
 ## Instructions d'installation
-1. **Nom du dossier** :
+ **Nom du dossier** :
    - Le dossier du projet DOIT être nommé `educational-website` en raison des chemins codés en dur dans les fichiers CSS et HTML.
 
-2. **Configuration de la base de données** :
-   - Importez les fichiers SQL situés dans le répertoire `sql/` dans votre base de données MySQL.
-     ```bash
-     mysql -u <nom_utilisateur> -p <nom_base_de_données> < sql/setup_database.sql
-     ```
+
 
 ## Instructions d'utilisation
 ### Pour les enfants :
