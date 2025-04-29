@@ -51,6 +51,3 @@
 - **PHP** : Pour la logique côté serveur et l'interaction avec la base de données
 - **MySQL** : Pour stocker et gérer les données
 - **JavaScript** : Pour les fonctionnalités interactives et le contenu dynamique
-
-## Remerciements
-Nous tenons à remercier tous les contributeurs et éducateurs qui ont inspiré la création de cette plateforme. Un merci spécial à la communauté open-source pour avoir fourni des ressources et des outils précieux.
